@@ -1,56 +1,37 @@
 import React from "react";
 import { Switch, Route } from "react-router";
-import { BrowserRouter as Router, Link } from "react-router-dom";
-import Loadable from "react-loadable";
-
-const Loading = () => <div>...</div>;
-
+import { BrowserRouter as Router } from "react-router-dom";
+import loadable from "@loadable/component";
+import { StoreProvider } from "./store";
 const routes = [
   {
-    path: "/page-one",
-    Component: Loadable({
-      loader: () => import("./pages/PageOne"),
-      loading: Loading
-    })
+    path: "/jobs",
+    Component: loadable(() => import("./pages/Jobs"))
   },
   {
-    path: "/page-two",
-    Component: Loadable({
-      loader: () => import("./pages/PageTwo"),
-      loading: Loading
-    })
+    path: "/",
+    exact: true,
+    Component: loadable(() => import("./pages/Home"))
+  },
+  {
+    path: "/profile",
+    Component: loadable(() => import("./pages/Profile"))
   }
 ];
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <div>
-        <header>
-          <ul>
-            <li>
-              <Link to="/page-one">Page One</Link>
-            </li>
-            <li>
-              <Link to="/page-two">Page Two</Link>
-            </li>
-            <li>
-              <Link to="/page-two/alt">Page Two Alternate</Link>
-            </li>
-          </ul>
-        </header>
-        <main>
-          <div>This is the body content</div>
-          <Switch>
-            {routes.map(({ path, Component }) => (
-              <Route key={path} path={path}>
-                <Component />
-              </Route>
-            ))}
-          </Switch>
-        </main>
-      </div>
-    </Router>
+    <StoreProvider>
+      <Router>
+        <Switch>
+          {routes.map(({ path, exact, Component }) => (
+            <Route exact={exact} key={path} path={path}>
+              <Component />
+            </Route>
+          ))}
+        </Switch>
+      </Router>
+    </StoreProvider>
   );
 };
 
